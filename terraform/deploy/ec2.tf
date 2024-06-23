@@ -14,8 +14,8 @@ data "aws_ami" "ubuntu" {
 
  }
 
- resource "aws_security_group" "strapi-sg" {
-  name        = "strapi-sg"
+ resource "aws_security_group" "strapi-security-grp" {
+  name        = "strapi-security-grp"
   description = "Allow TLS inbound traffic1"
 
   ingress {
@@ -44,31 +44,31 @@ data "aws_ami" "ubuntu" {
   }
 
   tags = {
-    Name = "strapi-sg"
+    Name = "strapi-security-grp"
   }
 }
 
- resource "tls_private_key" "key_pair" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
+# resource "tls_private_key" "key_pair" {
+#   algorithm = "RSA"
+#   rsa_bits  = 4096
+# }
 
-resource "aws_key_pair" "key" {
-  key_name   = "strapi-key"
-  public_key = tls_private_key.key_pair.public_key_openssh
-}
+# resource "aws_key_pair" "key" {
+#   key_name   = "strapi-key"
+#   public_key = tls_private_key.key_pair.public_key_openssh
+# }
 
-resource "local_file" "pem_file" {
-  filename          = pathexpand("./pem/strapi-key.pem")
-  file_permission   = "400"
-  sensitive_content = tls_private_key.key_pair.private_key_pem
-}
+# resource "local_file" "pem_file" {
+#   filename          = pathexpand("./pem/strapi-key.pem")
+#   file_permission   = "400"
+#   sensitive_content = tls_private_key.key_pair.private_key_pem
+# }
 
 resource "aws_instance" "strapi-server" {
   ami = data.aws_ami.ubuntu.id
   instance_type = "t3a.small"
-  key_name = "strapi-key"
-  vpc_security_group_ids = [aws_security_group.strapi-sg.id]
+  key_name = "taskkey.pem"
+  vpc_security_group_ids = [aws_security_group.strapi-security-grp.id]
 
   provisioner "remote-exec" {
     inline = [
@@ -95,7 +95,7 @@ resource "aws_instance" "strapi-server" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = tls_private_key.key_pair.private_key_pem
+    private_key = "taskkey.pem"
     host        = self.public_ip
   }
 
