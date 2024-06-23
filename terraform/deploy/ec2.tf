@@ -67,7 +67,7 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "strapi-server" {
   ami = data.aws_ami.ubuntu.id
   instance_type = "t3a.small"
-  key_name = "taskkey.pem"
+  key_name = "taskkey"
   vpc_security_group_ids = [aws_security_group.strapi-security-grp.id]
 
   provisioner "remote-exec" {
@@ -95,7 +95,7 @@ resource "aws_instance" "strapi-server" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = "taskkey.pem"
+    private_key = "taskkey"
     host        = self.public_ip
   }
 
