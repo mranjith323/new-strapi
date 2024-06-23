@@ -48,26 +48,26 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-# resource "tls_private_key" "key_pair" {
-#   algorithm = "RSA"
-#   rsa_bits  = 4096
-# }
+resource "tls_private_key" "key_pair" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
 
-# resource "aws_key_pair" "key" {
-#   key_name   = "strapi-key"
-#   public_key = tls_private_key.key_pair.public_key_openssh
-# }
+resource "aws_key_pair" "key" {
+  key_name   = "strapi-key"
+  public_key = tls_private_key.key_pair.public_key_openssh
+}
 
-# resource "local_file" "pem_file" {
-#   filename          = pathexpand("./pem/strapi-key.pem")
-#   file_permission   = "400"
-#   sensitive_content = tls_private_key.key_pair.private_key_pem
-# }
+resource "local_file" "pem_file" {
+  filename          = pathexpand("./pem/strapi-key.pem")
+  file_permission   = "400"
+  sensitive_content = tls_private_key.key_pair.private_key_pem
+}
 
 resource "aws_instance" "strapi-server" {
   ami = data.aws_ami.ubuntu.id
   instance_type = "t3a.small"
-  key_name = "taskkey"
+  key_name = "strapi-key"
   vpc_security_group_ids = [aws_security_group.strapi-security-grp.id]
 
   provisioner "remote-exec" {
@@ -95,7 +95,7 @@ resource "aws_instance" "strapi-server" {
   connection {
     type        = "ssh"
     user        = "ubuntu"
-    private_key = "taskkey"
+    private_key = tls_private_key.key_pair.private_key_pem
     host        = self.public_ip
   }
 
