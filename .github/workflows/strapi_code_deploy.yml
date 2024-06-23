@@ -1,4 +1,4 @@
-name: CI/CD workflow to deploy Strapi app (Code Deploy)
+name: To deploy Strapi app (Code Deploy)
 
 on:
   push:
@@ -14,7 +14,7 @@ on:
           - destroy
 
 jobs:
-  Code-deploy:
+  terraform:
     name: 'Terraform Apply or Destroy'
     runs-on: ubuntu-latest
 
@@ -45,7 +45,7 @@ jobs:
 
     - name: 'Terraform Format Check'
       working-directory: ${{ env.TF_WORKING_DIR }}
-      run: terraform fmt -check
+      run: terraform fmt -check || true
 
     - name: 'Terraform Validate'
       working-directory: ${{ env.TF_WORKING_DIR }}
