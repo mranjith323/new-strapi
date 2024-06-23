@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: 18.188.61.197
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/new-strapi
+            git checkout .
+            git pull
+            npm install
+            npm run build
+            pm2 restart 0
+            exit  
