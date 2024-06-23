@@ -3,19 +3,10 @@ name: To deploy Strapi app (Code Deploy)
 on:
   push:
     branches: [ master ]
-    inputs:
-      action:
-        description: 'Action to perform (apply or destroy)'
-        required: true
-        default: 'apply'
-        type: choice
-        options:
-          - apply
-          - destroy
 
 jobs:
   terraform:
-    name: 'Terraform Apply or Destroy'
+    name: 'Terraform Apply'
     runs-on: ubuntu-latest
 
     env:
@@ -57,11 +48,5 @@ jobs:
       run: terraform plan
 
     - name: 'Terraform Apply'
-      if: github.event.inputs.action == 'apply'
       working-directory: ${{ env.TF_WORKING_DIR }}
       run: terraform apply -auto-approve
-
-    - name: 'Terraform Destroy'
-      if: github.event.inputs.action == 'destroy'
-      working-directory: ${{ env.TF_WORKING_DIR }}
-      run: terraform destroy -auto-approve
