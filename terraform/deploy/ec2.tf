@@ -73,8 +73,10 @@ resource "aws_instance" "strapi-server" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt update -y",
-      "curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -",
+      "curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh",
+      "sudo bash nodesource_setup.sh",
       "sudo apt install -y nodejs",
+      "sudo apt install npm -y",
       "sudo npm install pm2@latest -g",
       "cd /srv/",
       "sudo chown -R ubuntu:ubuntu /srv",
