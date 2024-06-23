@@ -14,8 +14,8 @@ data "aws_ami" "ubuntu" {
 
  }
 
- resource "aws_security_group" "strapi-security-group" {
-  name        = "strapi-security-group"
+ resource "aws_security_group" "strapi-sg" {
+  name        = "strapi-sg"
   description = "Allow TLS inbound traffic1"
 
   ingress {
@@ -44,7 +44,7 @@ data "aws_ami" "ubuntu" {
   }
 
   tags = {
-    Name = "strapi-security-group"
+    Name = "strapi-sg"
   }
 }
 
@@ -68,7 +68,7 @@ resource "aws_instance" "strapi-server" {
   ami = data.aws_ami.ubuntu.id
   instance_type = "t3a.small"
   key_name = "strapi-key"
-  vpc_security_group_ids = [aws_security_group.strapi-security-group.id]
+  vpc_security_group_ids = [aws_security_group.strapi-sg.id]
 
   provisioner "remote-exec" {
     inline = [
