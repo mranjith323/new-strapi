@@ -75,7 +75,6 @@ resource "aws_instance" "strapi-server" {
       "sudo apt update -y",
       "curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh",
       "sudo bash nodesource_setup.sh",
-      "sudo apt update -y",
       "sudo apt install nodejs -y",
       "sudo apt install npm -y",
       "sudo npm install pm2@latest -g",
@@ -83,11 +82,13 @@ resource "aws_instance" "strapi-server" {
       "sudo chown -R ubuntu:ubuntu /srv",
       "git clone https://github.com/mranjith323/new-strapi.git strapi",
       "cd strapi",
+      "cp .env.example .env",
       "npm install",
       "npm run build",
       "pm2 start npm --name 'strapi' -- start",
       "pm2 save",
-      "pm2 startup"
+      "pm2 startup",
+      "sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu"
     ]
   }
 
